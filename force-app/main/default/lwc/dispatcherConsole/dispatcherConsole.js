@@ -1035,6 +1035,8 @@ export default class DispatchConsole extends LightningElement {
   }
 
   get currentTimeMarkerContainerStyle() {
+    if (!this.selectedProjectId) return "display: none;";
+
     const now = new Date();
     const todayStr = todayInTimeZoneDateStr(TIME_ZONE);
     const dDiff = diffDays(todayStr, this.activeDateStr);

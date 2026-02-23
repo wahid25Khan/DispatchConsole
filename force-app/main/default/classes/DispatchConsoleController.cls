@@ -7,27 +7,8 @@
  */
 public without sharing class DispatchConsoleController {
   // =============================================================================
-  // CONSTANTS
-  // =============================================================================
-
-  /** Field API names for TLG_Task__c scheduling fields (source of truth) */
-  private static final String TASK_START_DATE = 'TLG_Start_Date__c';
-  private static final String TASK_START_TIME = 'Start_Time__c';
-  private static final String TASK_END_DATE = 'TLG_End_Date__c';
-  private static final String TASK_END_TIME = 'End_Time__c';
-
-  // =============================================================================
   // PRIVATE HELPER METHODS
   // =============================================================================
-
-  /**
-   * @description Pads a number to 2 digits with leading zero
-   * @param n The number to pad
-   * @return String padded to 2 characters
-   */
-  private static String pad2(Integer n) {
-    return String.valueOf(n).leftPad(2, '0');
-  }
 
   /**
    * @description Checks if a status value indicates completed/closed
@@ -76,21 +57,6 @@ public without sharing class DispatchConsoleController {
     }
   }
 
-  /**
-   * @description Builds an IN clause string from a set of Ids
-   * @param ids Set of Salesforce Ids
-   * @return Comma-separated string of quoted Ids for SOQL IN clause
-   */
-  private static String buildIdInClause(Set<Id> ids) {
-    List<String> parts = new List<String>();
-    if (ids == null)
-      return '';
-    for (Id i : ids) {
-      parts.add('\'' + String.escapeSingleQuotes((String) i) + '\'');
-    }
-    return String.join(parts, ',');
-  }
-
   // =============================================================================
   // PUBLIC AURA-ENABLED METHODS
   // =============================================================================
@@ -112,7 +78,7 @@ public without sharing class DispatchConsoleController {
           '(SELECT Id, Name, Role__c, TLG_Member__c, ' +
           'TLG_Member__r.Name, TLG_Member__r.Designation__c, TLG_Member__r.Allowed_Overlap__c ' +
           ' FROM Team_Members__r WHERE TLG_Member__c != NULL) ' +
-          'FROM TLG_Team__c ORDER BY Name'
+          'FROM TLG_Team__c ORDER BY Name LIMIT 2000'
       )
     );
 
@@ -123,6 +89,7 @@ public without sharing class DispatchConsoleController {
         SELECT Id, Name, Team__c, Account.Name
         FROM Opportunity
         ORDER BY Name
+        LIMIT 20
       ]
     );
 
