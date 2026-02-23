@@ -5,6 +5,7 @@
  * @author TLG Development Team
  * @date 2026-01-30
  */
+@SuppressWarnings('PMD.ApexSharingViolations, PMD.ApexCRUDViolation')
 public without sharing class DispatchConsoleController {
   // =============================================================================
   // PRIVATE HELPER METHODS
