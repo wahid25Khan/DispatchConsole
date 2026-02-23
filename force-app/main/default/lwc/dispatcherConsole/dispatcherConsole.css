@@ -215,20 +215,7 @@
     --slds-c-input-sizing-border: 1px solid var(--dc-border);
     --slds-c-input-color-background: var(--dc-surface);
     --slds-c-input-text-color: var(--dc-text);
-}
-
-.fs-date-picker input {
-    background: var(--dc-surface) !important;
-    border: 1px solid var(--dc-border) !important;
-    color: var(--dc-text) !important;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 13px;
-}
-
-.fs-date-picker input:focus {
-    background: var(--dc-surface) !important;
-    border-color: var(--dc-brand) !important;
+    --slds-c-input-radius-border: 4px;
 }
 
 .fs-date-controls {
@@ -331,7 +318,7 @@
     position: sticky;
     top: 0;
     z-index: 20;
-    padding: 16px !important;
+    padding: 16px;
 }
 
 .fs-sidebar-title {
