@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TLG_Preferred_Status__c</fullName>
+    <label>Preferred Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Completed</fullName>
+                <default>false</default>
+                <label>Completed</label>
+            </value>
+            <value>
+                <fullName>Deferred</fullName>
+                <default>false</default>
+                <label>Deferred</label>
+            </value>
+            <value>
+                <fullName>In Progress</fullName>
+                <default>false</default>
+                <label>In Progress</label>
+            </value>
+            <value>
+                <fullName>Need More Information</fullName>
+                <default>false</default>
+                <label>Need More Information</label>
+            </value>
+            <value>
+                <fullName>New</fullName>
+                <default>false</default>
+                <label>New</label>
+            </value>
+            <value>
+                <fullName>Not Started</fullName>
+                <default>false</default>
+                <label>Not Started</label>
+            </value>
+            <value>
+                <fullName>Re-Assigned</fullName>
+                <default>false</default>
+                <label>Re-Assigned</label>
+            </value>
+            <value>
+                <fullName>Waiting on someone else</fullName>
+                <default>false</default>
+                <label>Waiting on someone else</label>
+            </value>
+            <value>
+                <fullName>Intake</fullName>
+                <default>false</default>
+                <label>Intake</label>
+            </value>
+            <value>
+                <fullName>Price Request/Deal Reg</fullName>
+                <default>false</default>
+                <label>Price Request/Deal Reg</label>
+            </value>
+            <value>
+                <fullName>Building</fullName>
+                <default>false</default>
+                <label>Building</label>
+            </value>
+            <value>
+                <fullName>Returned to AM</fullName>
+                <default>false</default>
+                <label>Returned to AM</label>
+            </value>
+            <value>
+                <fullName>Peer Review/Manager Approval</fullName>
+                <default>false</default>
+                <label>Peer Review/Manager Approval</label>
+            </value>
+            <value>
+                <fullName>Sent to AM/Sent to Customer</fullName>
+                <default>false</default>
+                <label>Sent to AM/Sent to Customer</label>
+            </value>
+            <value>
+                <fullName>Waiting</fullName>
+                <default>false</default>
+                <label>Waiting</label>
+            </value>
+            <value>
+                <fullName>Project</fullName>
+                <default>false</default>
+                <label>Project</label>
+            </value>
+            <value>
+                <fullName>SecureAssist</fullName>
+                <default>false</default>
+                <label>SecureAssist</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

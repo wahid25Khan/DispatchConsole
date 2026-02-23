@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Start_Date__c</fullName>
+    <description>The date someone began working on the case. This is automatically entered when the case is set to any status other than &quot;new&quot;. That way, we can report # of days to complete from start date, and number of dates/hours from CREATED DATE to START DATE</description>
+    <inlineHelpText>The date someone began working on the case. This is automatically entered when the case is set to any status other than &quot;new&quot;. That way, we can report # of days to complete from start date, and number of dates/hours from CREATED DATE to START DATE</inlineHelpText>
+    <label>Start Date</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

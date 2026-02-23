@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Allowed_Overlap__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When checked, this member can have overlapping scheduled action items in the Dispatch Console.</description>
+    <inlineHelpText>Allows overlapping schedules for this user/member.</inlineHelpText>
+    <label>Allowed Overlap</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

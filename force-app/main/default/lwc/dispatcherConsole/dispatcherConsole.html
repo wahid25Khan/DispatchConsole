@@ -1,0 +1,617 @@
+<!--
+    @description       : Dispatch Console - Project-based task scheduling component
+    @author            : TLG Development Team
+    @last modified on  : 02-01-2026
+    @version           : 2026-01-30.4
+-->
+<template>
+    <div style="overflow: hidden;">
+    <div class="dispatch-console-container">
+        <template if:true={isLoading}>
+            <output class="loading-overlay" aria-live="polite">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </output>
+        </template>
+
+        <template if:true={errorMessage}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-around_medium" role="alert">
+                <span class="slds-assistive-text">Error</span>
+                <h2 class="slds-text-heading_small">{errorMessage}</h2>
+            </div>
+        </template>
+
+        <template if:true={warningMessage}>
+            <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-around_medium" role="alert">
+                <span class="slds-assistive-text">Warning</span>
+                <h2 class="slds-text-heading_small">{warningMessage}</h2>
+            </div>
+        </template>
+
+        <!-- Page Header Row (56px) -->
+        <header class="dc-page-header">
+            <div class="dc-page-header-row slds-grid slds-grid_vertical-align-center slds-p-horizontal_medium">
+                <div class="dc-page-title slds-grid slds-grid_vertical-align-center">
+                    <lightning-icon icon-name="utility:workspace" size="small"
+                        class="slds-m-right_small"></lightning-icon>
+                    <h1 class="dc-title">Dispatch Console</h1>
+                </div>
+
+                <div class="slds-col_filler"></div>
+
+                <div class="dc-page-actions slds-grid slds-grid_vertical-align-center">
+                    <lightning-button-icon icon-name="utility:refresh" variant="bare" alternative-text="Refresh"
+                        onclick={handleRefresh} class="dc-icon-btn"></lightning-button-icon>
+                    <lightning-button-icon icon-name="utility:help" variant="bare" alternative-text="Help"
+                        onclick={handleHelpOpen} class="dc-icon-btn"></lightning-button-icon>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sticky Toolbar (52px) -->
+        <div class="dc-sticky-toolbar" aria-label="Dispatch Console toolbar">
+            <div class="dc-toolbar-row slds-grid slds-grid_vertical-align-center slds-p-horizontal_medium">
+                <!-- Project selector (most prominent) -->
+                <div class="dc-toolbar-project">
+                    <div class="fs-project-dropdown-container">
+                        <lightning-button label={selectedProjectLabel} icon-name="utility:search"
+                            onclick={handleProjectDropdownOpen} variant="neutral" class="fs-project-dropdown-trigger">
+                        </lightning-button>
+
+                        <template if:true={isProjectDropdownOpen}>
+                            <div class="fs-project-dropdown-menu slds-dropdown slds-dropdown_left">
+                                <div class="slds-p-around_small">
+                                    <lightning-input type="search" variant="label-hidden" placeholder="Search projects"
+                                        value={projectDropdownSearchTerm} oninput={handleProjectDropdownSearch}
+                                        class="fs-project-search-input">
+                                    </lightning-input>
+                                </div>
+                                <ul class="slds-dropdown__list fs-project-dropdown-list">
+                                    <template if:false={filteredProjectResults.length}>
+                                        <li class="slds-dropdown__item slds-p-around_small slds-text-align_center">
+                                            <span class="slds-text-color_weak">No projects found</span>
+                                        </li>
+                                    </template>
+                                    <template for:each={filteredProjectResults} for:item="proj">
+                                        <li key={proj.Id} class="slds-dropdown__item">
+                                            <button type="button" data-id={proj.Id} onclick={handleProjectSelect}
+                                                class="slds-truncate fs-dropdown-button">
+                                                <span>{proj.displayLabel}</span>
+                                            </button>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Date controls: Today + prev/next + date picker -->
+                <div class="dc-toolbar-date slds-grid slds-grid_vertical-align-center slds-m-left_medium">
+                    <lightning-button label="Today" variant="neutral" onclick={handleToday}
+                        class="dc-today-btn"></lightning-button>
+                    <lightning-button-icon icon-name="utility:chevronleft" variant="bare"
+                        alternative-text="Previous day" onclick={handlePrevDay}
+                        class="dc-icon-btn"></lightning-button-icon>
+                    <div class="fs-date-picker-wrapper">
+                        <lightning-input type="date" value={activeDateValue} onchange={handleDateChange}
+                            variant="label-hidden" class="fs-date-picker">
+                        </lightning-input>
+                    </div>
+                    <lightning-button-icon icon-name="utility:chevronright" variant="bare" alternative-text="Next day"
+                        onclick={handleNextDay} class="dc-icon-btn"></lightning-button-icon>
+                </div>
+
+                <!-- View toggle: Day / Multi-day / Week -->
+                <fieldset class="dc-toolbar-view slds-m-left_medium">
+                    <legend class="slds-assistive-text">Range</legend>
+                    <button type="button" class={dayRangeButtonClass} data-mode="day"
+                        onclick={handleTimelineRangeToggle}>
+                        Day
+                    </button>
+                    <button type="button" class={multiDayRangeButtonClass} data-mode="multiday"
+                        onclick={handleTimelineRangeToggle}>
+                        Multi-day
+                    </button>
+                    <button type="button" class={weekRangeButtonClass} data-mode="week"
+                        onclick={handleTimelineRangeToggle}>
+                        Week
+                    </button>
+                </fieldset>
+
+                <!-- Zoom controls -->
+                <div class="dc-toolbar-zoom slds-grid slds-grid_vertical-align-center slds-m-left_medium"
+                    aria-label="Zoom">
+                    <lightning-button-icon icon-name="utility:dash" variant="bare" alternative-text="Zoom out"
+                        onclick={handleZoomOut} class="dc-icon-btn"></lightning-button-icon>
+                    <span class="dc-zoom-label">{zoomLabel}</span>
+                    <lightning-button-icon icon-name="utility:add" variant="bare" alternative-text="Zoom in"
+                        onclick={handleZoomIn} class="dc-icon-btn"></lightning-button-icon>
+                </div>
+
+                <div class="slds-col_filler"></div>
+
+                <!-- Optional global search (far right) -->
+                <div class="dc-toolbar-search">
+                    <lightning-input type="search" variant="label-hidden" placeholder="Search" value={globalSearchQuery}
+                        oninput={handleGlobalSearchInput}></lightning-input>
+                </div>
+            </div>
+        </div>
+
+        <div class="fs-main-body slds-grid">
+            <!-- Left Panel: Unscheduled Action Items (Project → Target → Action Items) -->
+            <aside class="fs-sidebar">
+                <div class="fs-sidebar-header slds-p-around_small slds-grid slds-grid_vertical-align-center">
+                    <h2 class="fs-sidebar-title">Unscheduled Action Items</h2>
+                    <span class="dc-count-pill slds-m-left_small"
+                        aria-label="Unscheduled count">{unscheduledCount}</span>
+                    <lightning-button-icon icon-name="utility:filterList" size="small" variant="bare"
+                        onclick={toggleFilterPanel} class="slds-m-left_auto"></lightning-button-icon>
+                </div>
+
+                <div class="slds-p-around_small">
+                    <lightning-input type="search" variant="label-hidden" placeholder="Search action items..."
+                        oninput={handleBacklogSearch}></lightning-input>
+                </div>
+
+                <template if:true={isFilterOpen}>
+                    <div class="slds-p-around_small slds-border_bottom">
+                        <lightning-combobox label="Priority" value={priorityFilter} options={priorityOptions}
+                            onchange={handlePriorityChange} class="slds-m-bottom_x-small"></lightning-combobox>
+                        <lightning-combobox label="Duration" value={durationFilter} options={durationOptions}
+                            onchange={handleDurationChange}></lightning-combobox>
+                    </div>
+                </template>
+
+                <div class="fs-backlog-list">
+                    <template if:false={selectedOpportunity}>
+                        <div class="dc-empty-state">
+                            <div class="dc-empty-hero">
+                                <div class="dc-empty-title">Pick a Project to get started</div>
+                                <div class="dc-empty-subtitle">Unscheduled work will appear here, grouped by Target.
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template if:true={selectedOpportunity}>
+                        <template if:false={filteredUnscheduledByTarget.length}>
+                            <div class="slds-p-around_medium slds-text-align_center">
+                                <p class="slds-text-color_weak">No unscheduled action items</p>
+                            </div>
+                        </template>
+
+                        <lightning-accordion allow-multiple-sections-open class="slds-p-horizontal_x-small">
+                            <template for:each={filteredUnscheduledByTarget} for:item="target">
+                                <lightning-accordion-section key={target.targetId} name={target.targetId}
+                                    label={target.displayLabel}>
+                                    <template for:each={target.actionItems} for:item="ai">
+                                        <button key={ai.id} type="button" class="fs-backlog-item dc-card"
+                                            draggable={ai.isDraggable} onclick={openUnscheduledActionItem}
+                                            ondragstart={handleDragStart} data-id={ai.id} data-source="unscheduled">
+                                            <div
+                                                class="dc-card-top slds-grid slds-grid_align-spread slds-m-bottom_xx-small">
+                                                <div class="dc-card-title slds-grid slds-grid_vertical-align-center">
+                                                    <template if:true={isDragEnabled}>
+                                                        <lightning-icon icon-name="utility:drag_and_drop" size="x-small"
+                                                            class="dc-drag-handle" alternative-text="Drag"></lightning-icon>
+                                                    </template>
+                                                    <span class="fs-task-name">{ai.title}</span>
+                                                </div>
+                                                <span class={ai.priorityClass}>{ai.priority}</span>
+                                            </div>
+                                            <div class="dc-card-meta slds-text-body_small slds-text-color_weak">
+                                                <span class="dc-meta-item">Assigned: {ai.assignedToName}</span>
+                                                <span class="dc-meta-sep">•</span>
+                                                <span class="dc-meta-item">{ai.duration}m</span>
+                                            </div>
+                                        </button>
+                                    </template>
+                                </lightning-accordion-section>
+                            </template>
+                        </lightning-accordion>
+                    </template>
+                </div>
+            </aside>
+
+            <!-- Timeline -->
+            <main class="fs-gantt-container">
+                <div class="fs-gantt-view">
+                    <div class="fs-timeline-wrapper" style={timelineWidthStyle}>
+                        <!-- Timeline Header -->
+                        <div class="fs-timeline-header">
+                            <!-- Team header row (read-only) -->
+                            <div class="fs-timeline-header-row slds-grid">
+                                <div class="fs-resource-column-header fs-header-spacer">
+                                    <span class="fs-resource-label">Team</span>
+                                </div>
+                                <div class="dc-team-header" style={slotsSurfaceStyle} aria-label="Team header">
+                                    <template if:true={activeProject.teamName}>
+                                        <span class="dc-team-header-text">{activeProject.teamName}</span>
+                                    </template>
+                                    <template if:false={activeProject.teamName}>
+                                        <span class="dc-team-header-text dc-team-header-text--disabled">No Team
+                                            Assigned</span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <!-- Day headers (7-day view) -->
+                            <div class="fs-timeline-header-row slds-grid">
+                                <div class="fs-resource-column-header fs-header-spacer"></div>
+                                <template for:each={dayHeaders} for:item="day">
+                                    <div key={day.dateStr} class="fs-day-header" style={day.widthStyle}>
+                                        <span class="fs-day-label">{day.label}</span>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Time slot headers (15-minute grid) -->
+                            <div class="fs-timeline-header-row slds-grid">
+                                <div class="fs-resource-column-header">
+                                    <span class="fs-resource-label">Team Members</span>
+                                </div>
+                                <div class="dc-time-axis" style={slotsSurfaceStyle} aria-hidden="true">
+                                    <template for:each={timeAxisTicks} for:item="tick">
+                                        <div key={tick.key} class="dc-time-axis-tick" style={tick.style}>
+                                            <span class="dc-time-axis-label">{tick.label}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resource Rows (virtualized vertically) -->
+                        <div class="fs-territory-section" style={laneVirtualPaddingStyle}>
+                            <template for:each={activeProject.team} for:item="member">
+                                <div key={member.id} class={member.rowClass}>
+                                    <!-- Resource Info Column -->
+                                    <div
+                                        class="fs-resource-info slds-grid slds-grid_vertical-align-center slds-p-around_x-small">
+                                        <div class="fs-avatar slds-m-right_small">{member.avatar}</div>
+                                        <div class="fs-resource-details">
+                                            <div class="fs-resource-name">{member.name}</div>
+                                            <div class="fs-resource-role">
+                                                <lightning-icon icon-name="utility:user" size="xx-small"
+                                                    class="slds-m-right_xx-small"></lightning-icon>
+                                                {member.role}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Timeline Surface (virtualized slots) -->
+                                    <div class="fs-timeline-row slds-grid">
+                                        <button type="button" class="fs-timeline-surface" style={slotsSurfaceStyle}
+                                            ondragover={handleTimelineRowDragOver}
+                                            ondragleave={handleTimelineRowDragLeave} ondrop={handleTimelineRowDrop}
+                                            onclick={handleTimelineRowClick} data-resource-id={member.id} tabindex="-1"
+                                            aria-label="Timeline grid">
+                                        </button>
+
+                                        <!-- UI Layers: Weekends -->
+                                        <div class="dc-timeline-layers" aria-hidden="true">
+                                            <template for:each={weekendBlocks} for:item="blk">
+                                                <div key={blk.key} class="fs-weekend-background" style={blk.style}>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <template if:true={member.isDragOver}>
+                                            <div class="dc-drop-indicator" style={dropIndicatorStyle}
+                                                aria-hidden="true"></div>
+                                            <div class="dc-drop-label" style={dropIndicatorStyle} aria-hidden="true">
+                                                {dropIndicatorLabel}</div>
+                                        </template>
+
+                                        <!-- Scheduled Task Blocks -->
+                                        <template for:each={member.tasks} for:item="task">
+                                            <button key={task.id} type="button" class={task.blockClass}
+                                                style={task.blockStyle} onclick={openDrawer} data-id={task.id}
+                                                draggable={task.isDraggable} ondragstart={handleDragStart}
+                                                data-source="scheduler" aria-label={task.ariaLabel}>
+                                                <div class="fs-task-block-content">
+                                                    <div class="fs-task-block-title">
+                                                        <template for:each={task.labelSegments} for:item="seg">
+                                                            <span key={seg.key} class="dc-task-label-seg"
+                                                                style={seg.style}>{seg.text}</span>
+                                                        </template>
+                                                    </div>
+                                                    <div class="fs-task-block-time">{task.timeRange}</div>
+                                                </div>
+                                                <template if:true={task.showOverlapIndicator}>
+                                                    <span class="dc-overlap-indicator"
+                                                        title="Overlaps another scheduled item" aria-hidden="true">
+                                                        <lightning-icon icon-name="utility:warning" size="xx-small"
+                                                            alternative-text="Overlap"></lightning-icon>
+                                                    </span>
+                                                </template>
+                                                <template if:false={task.isLocked}>
+                                                    <span class="fs-resize-handle" data-id={task.id}
+                                                        onmousedown={handleResizeStart} onclick={stopPropagation}
+                                                        onkeydown={handleResizeHandleKeyDown} aria-hidden="true"
+                                                        title="Resize"></span>
+                                                </template>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Unified Current Time Marker (single line across all rows) -->
+                        <div class="dc-current-time-marker-container" style={currentTimeMarkerContainerStyle}
+                            aria-hidden="true">
+                            <div class="dc-current-time-marker-line"></div>
+                            <div class="dc-current-time-marker-label">Now</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Detail Drawer -->
+        <template if:true={selectedTask}>
+            <div class="fs-drawer">
+                <div class="fs-drawer-content">
+                    <header
+                        class="fs-drawer-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_medium">
+                        <h2 class="fs-drawer-title">Action Item Details</h2>
+                        <lightning-button-icon icon-name="utility:close" variant="bare" size="large"
+                            onclick={closeDrawer}></lightning-button-icon>
+                    </header>
+
+                    <div class="fs-drawer-body slds-p-around_medium">
+                        <div class="slds-m-bottom_medium">
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_small">
+                                <span class={selectedTask.priorityClass}>{selectedTask.priority}</span>
+                                <span class="slds-text-body_small slds-text-color_weak">{selectedTask.id}</span>
+                            </div>
+                            <h3 class="slds-text-heading_medium slds-m-bottom_medium">{selectedTask.title}</h3>
+
+                            <div class="slds-grid slds-wrap slds-gutters_small">
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="fs-detail-box slds-box slds-p-around_small">
+                                        <div class="fs-detail-label slds-text-body_small slds-text-color_weak">Time
+                                            Window</div>
+                                        <div class="fs-detail-value slds-text-body_regular">{selectedTask.timeRange}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2">
+                                    <div class="fs-detail-box slds-box slds-p-around_small">
+                                        <div class="fs-detail-label slds-text-body_small slds-text-color_weak">Duration
+                                        </div>
+                                        <div class="fs-detail-value slds-text-body_regular">{selectedTask.duration}m
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress indicator -->
+                        <template if:true={selectedTask.percentComplete}>
+                            <div class="slds-m-bottom_medium">
+                                <div
+                                    class="fs-detail-label slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">
+                                    Progress</div>
+                                <div class="slds-progress-bar slds-progress-bar_circular">
+                                    <span class="slds-progress-bar__value" style={selectedTaskProgressStyle}>
+                                        <span class="slds-assistive-text">Progress:
+                                            {selectedTask.percentComplete}%</span>
+                                    </span>
+                                </div>
+                                <div class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                                    {selectedTask.percentComplete}% Complete</div>
+                            </div>
+                        </template>
+
+                        <div class="slds-m-bottom_medium">
+                            <template if:true={selectedTask.location}>
+                                <div
+                                    class="fs-info-row slds-grid slds-grid_vertical-align-center slds-p-around_small slds-m-bottom_small">
+                                    <lightning-icon icon-name="utility:cases" size="small"
+                                        class="slds-m-right_small"></lightning-icon>
+                                    <div>
+                                        <div class="fs-detail-label slds-text-body_small slds-text-color_weak">Target
+                                        </div>
+                                        <div class="fs-detail-value">{selectedTask.location}</div>
+                                    </div>
+                                </div>
+                            </template>
+                            <div class="fs-info-row slds-grid slds-grid_vertical-align-center slds-p-around_small">
+                                <lightning-icon icon-name="utility:user" size="small"
+                                    class="slds-m-right_small"></lightning-icon>
+                                <div>
+                                    <div class="fs-detail-label slds-text-body_small slds-text-color_weak">Assigned To
+                                    </div>
+                                    <div class="fs-detail-value">{selectedTask.assignedToName}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <template if:true={selectedTask.description}>
+                            <div class="slds-m-bottom_medium">
+                                <div
+                                    class="fs-detail-label slds-text-body_small slds-text-color_weak slds-m-bottom_xx-small">
+                                    Description</div>
+                                <div class="slds-text-body_regular">{selectedTask.description}</div>
+                            </div>
+                        </template>
+
+                        <div class="fs-drawer-actions">
+                            <template if:false={isSelectedTaskScheduled}>
+                                <lightning-button label="Schedule" variant="brand"
+                                    class="slds-m-bottom_x-small slds-col_padded" onclick={handleScheduleFromDrawer}
+                                    disabled={isActionsDisabled}></lightning-button>
+                            </template>
+                            <template if:true={isSelectedTaskScheduled}>
+                                <template if:false={selectedTask.isLocked}>
+                                    <lightning-button label="Release to Backlog" variant="neutral"
+                                        class="slds-col_padded" onclick={handleUnschedule} disabled={isActionsDisabled}></lightning-button>
+                                </template>
+                                <template if:true={selectedTask.isLocked}>
+                                    <div
+                                        class="slds-text-color_weak slds-text-body_small slds-text-align_center slds-p-around_small">
+                                        <lightning-icon icon-name="utility:lock" size="xx-small"
+                                            class="slds-m-right_xx-small"></lightning-icon>
+                                        This action item is completed and locked.
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Scheduling Modal -->
+        <template if:true={isSchedulingModalOpen}>
+            <dialog class="slds-modal slds-fade-in-open" open>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" variant="bare-inverse" size="large"
+                            onclick={closeSchedulingModal} class="slds-modal__close"></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium">Schedule Action Item</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template if:true={schedulingTask}>
+                            <div class="slds-m-bottom_medium">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">{schedulingTask.title}</h3>
+                                <p class="slds-text-color_weak">{schedulingTask.location}</p>
+                            </div>
+
+                            <div class="slds-form slds-form_stacked">
+                                <div class="slds-grid slds-wrap slds-gutters_medium">
+                                    <div class="slds-col slds-size_1-of-1 slds-m-bottom_medium">
+                                        <lightning-combobox label="Assigned To" value={scheduleAssignedToId}
+                                            options={teamMemberOptions} onchange={handleScheduleAssignedToChange}
+                                            required placeholder="Select Resource...">
+                                        </lightning-combobox>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="fs-modal-group">
+                                            <div class="fs-modal-group-label">Start</div>
+                                            <lightning-input type="date" label="Start Date" variant="label-stacked"
+                                                value={scheduleStartDate} onchange={handleScheduleStartDateChange}
+                                                required>
+                                            </lightning-input>
+                                            <lightning-input type="time" label="Start Time" variant="label-stacked"
+                                                value={scheduleStartTime} onchange={handleScheduleStartTimeChange}
+                                                required class="slds-m-top_x-small">
+                                            </lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-2">
+                                        <div class="fs-modal-group">
+                                            <div class="fs-modal-group-label">End</div>
+                                            <lightning-input type="date" label="End Date" variant="label-stacked"
+                                                value={scheduleEndDate} onchange={handleScheduleEndDateChange} required>
+                                            </lightning-input>
+                                            <lightning-input type="time" label="End Time" variant="label-stacked"
+                                                value={scheduleEndTime} onchange={handleScheduleEndTimeChange} required
+                                                class="slds-m-top_x-small">
+                                            </lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
+                                        <div
+                                            class="slds-box slds-theme_shade slds-p-around_small slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                                            <span class="slds-text-body_small slds-text-color_weak">Estimated
+                                                Duration</span>
+                                            <span
+                                                class="slds-text-heading_small"><strong>{formattedEstimatedDuration}</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <template if:true={scheduleValidationError}>
+                                    <div class="slds-m-top_small slds-text-color_error" role="alert">
+                                        {scheduleValidationError}
+                                    </div>
+                                </template>
+
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={closeSchedulingModal}></lightning-button>
+                        <lightning-button label="Confirm Schedule" variant="brand" onclick={handleConfirmSchedule}
+                            disabled={isConfirmScheduleDisabled}></lightning-button>
+                    </footer>
+                </div>
+            </dialog>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Help Modal -->
+        <template if:true={isHelpModalOpen}>
+            <dialog class="slds-modal slds-fade-in-open" open>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <lightning-button-icon icon-name="utility:close" variant="bare-inverse" size="large"
+                            onclick={handleHelpClose} class="slds-modal__close"></lightning-button-icon>
+                        <h2 class="slds-text-heading_medium">Dispatch Console Help</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-m-bottom_medium">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Getting Started</h3>
+                            <ol class="slds-list_ordered">
+                                <li class="slds-m-bottom_x-small"><strong>Select a Project</strong> - Click the project
+                                    dropdown in the toolbar to choose a project.</li>
+                                <li class="slds-m-bottom_x-small"><strong>View Team Members</strong> - The timeline
+                                    shows all team members assigned to the project.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Schedule Action Items</strong> - Drag items
+                                    from the left panel onto the timeline, or click a time slot to schedule.</li>
+                            </ol>
+                        </div>
+
+                        <div class="slds-m-bottom_medium">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Timeline Controls</h3>
+                            <ul class="slds-list_dotted">
+                                <li class="slds-m-bottom_x-small"><strong>Day / Multi-day / Week</strong> - Toggle the
+                                    timeline view range.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Zoom</strong> - Use +/- buttons to zoom in or
+                                    out on the timeline.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Today</strong> - Jump to today's date.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Navigation</strong> - Use arrows to move
+                                    forward/backward in time.</li>
+                            </ul>
+                        </div>
+
+                        <div class="slds-m-bottom_medium">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Working with Action Items</h3>
+                            <ul class="slds-list_dotted">
+                                <li class="slds-m-bottom_x-small"><strong>Drag & Drop</strong> - Drag unscheduled items
+                                    onto a team member's timeline row.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Resize</strong> - Drag the right edge of a
+                                    scheduled block to adjust duration.</li>
+                                <li class="slds-m-bottom_x-small"><strong>View Details</strong> - Click any action item
+                                    to open the detail drawer.</li>
+                                <li class="slds-m-bottom_x-small"><strong>Release</strong> - Use the drawer to release
+                                    scheduled items back to the backlog.</li>
+                            </ul>
+                        </div>
+
+                        <div class="slds-box slds-theme_shade slds-p-around_small">
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <lightning-icon icon-name="utility:info" size="small"
+                                    class="slds-m-right_small"></lightning-icon>
+                                <span class="slds-text-body_small">Completed action items are locked and cannot be
+                                    rescheduled.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Got It" variant="brand" onclick={handleHelpClose}></lightning-button>
+                    </footer>
+                </div>
+            </dialog>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+    </div>
+</template>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Packages__c</fullName>
+    <label>Packages</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Sales Cloud</fullName>
+                <default>false</default>
+                <label>Sales Cloud</label>
+            </value>
+            <value>
+                <fullName>Service Cloud</fullName>
+                <default>false</default>
+                <label>Service Cloud</label>
+            </value>
+            <value>
+                <fullName>Marketing Cloud</fullName>
+                <default>false</default>
+                <label>Marketing Cloud</label>
+            </value>
+            <value>
+                <fullName>Digital Engagement</fullName>
+                <default>false</default>
+                <label>Digital Engagement</label>
+            </value>
+            <value>
+                <fullName>Commerce Cloud</fullName>
+                <default>false</default>
+                <label>Commerce Cloud</label>
+            </value>
+            <value>
+                <fullName>Consumer Goods</fullName>
+                <default>false</default>
+                <label>Consumer Goods</label>
+            </value>
+            <value>
+                <fullName>Health Cloud</fullName>
+                <default>false</default>
+                <label>Health Cloud</label>
+            </value>
+            <value>
+                <fullName>Integration Cloud</fullName>
+                <default>false</default>
+                <label>Integration Cloud</label>
+            </value>
+            <value>
+                <fullName>Salesforce CPQ</fullName>
+                <default>false</default>
+                <label>Salesforce CPQ</label>
+            </value>
+            <value>
+                <fullName>Salesforce Maps</fullName>
+                <default>false</default>
+                <label>Salesforce Maps</label>
+            </value>
+            <value>
+                <fullName>Salesforce Scheduler</fullName>
+                <default>false</default>
+                <label>Salesforce Scheduler</label>
+            </value>
+            <value>
+                <fullName>Sales Engagement</fullName>
+                <default>false</default>
+                <label>Sales Engagement</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

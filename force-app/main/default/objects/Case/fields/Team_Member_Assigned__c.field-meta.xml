@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Team_Member_Assigned__c</fullName>
+    <label>Assigned To</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Assigned_to_Team__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Shyam Sarkar and Scott Haleo</fullName>
+                <default>false</default>
+                <label>Shyam Sarkar and Scott Haleo</label>
+            </value>
+            <value>
+                <fullName>Biren and Prerak | Sigma Solve</fullName>
+                <default>false</default>
+                <label>Biren and Prerak | Sigma Solve</label>
+            </value>
+            <value>
+                <fullName>Erick Daniel Dela Rosa</fullName>
+                <default>false</default>
+                <label>Erick Daniel Dela Rosa</label>
+            </value>
+            <value>
+                <fullName>Mohsin &amp; Wahid | CloudPrimero</fullName>
+                <default>false</default>
+                <label>Mohsin &amp; Wahid | CloudPrimero</label>
+            </value>
+            <value>
+                <fullName>Prasanna | Advanz101</fullName>
+                <default>false</default>
+                <label>Prasanna | Advanz101</label>
+            </value>
+            <value>
+                <fullName>Gunjan / Chetan | CommunicationCrafts</fullName>
+                <default>false</default>
+                <label>Gunjan / Chetan | CommunicationCrafts</label>
+            </value>
+            <value>
+                <fullName>Priyanka Borode</fullName>
+                <default>false</default>
+                <label>Priyanka Borode</label>
+            </value>
+            <value>
+                <fullName>Jerre - Snitcher</fullName>
+                <default>false</default>
+                <label>Jerre - Snitcher</label>
+            </value>
+            <value>
+                <fullName>Zack</fullName>
+                <default>false</default>
+                <label>Zack</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Shyam Sarkar and Scott Haleo</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Biren and Prerak | Sigma Solve</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Erick Daniel Dela Rosa</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Mohsin &amp; Wahid | CloudPrimero</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Prasanna | Advanz101</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Gunjan / Chetan | CommunicationCrafts</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Priyanka Borode</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Jerre - Snitcher</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Yes</controllingFieldValue>
+            <valueName>Zack</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

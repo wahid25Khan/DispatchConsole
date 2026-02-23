@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TLG_Total_Days_Spent__c</fullName>
+    <label>Total Days Spent</label>
+    <summarizedField>TLG_Task_History__c.TLG_Days_Spent__c</summarizedField>
+    <summaryForeignKey>TLG_Task_History__c.TLG_Task__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

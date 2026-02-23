@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Case_Category__c</fullName>
+    <label>Case Category</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>In Scope</fullName>
+                <default>false</default>
+                <label>In Scope</label>
+            </value>
+            <value>
+                <fullName>Out Scope - Change Request</fullName>
+                <default>false</default>
+                <label>Out Scope - Change Request</label>
+            </value>
+            <value>
+                <fullName>Out Scope - Good Will</fullName>
+                <default>false</default>
+                <label>Out Scope - Good Will</label>
+            </value>
+            <value>
+                <fullName>Compliance Requirement</fullName>
+                <default>false</default>
+                <label>Compliance Requirement</label>
+            </value>
+            <value>
+                <fullName>Client Request - Non Critical</fullName>
+                <default>false</default>
+                <label>Client Request - Non Critical</label>
+            </value>
+            <value>
+                <fullName>Client Request - Critical</fullName>
+                <default>false</default>
+                <label>Client Request - Critical</label>
+            </value>
+            <value>
+                <fullName>Internal Improvement</fullName>
+                <default>false</default>
+                <label>Internal Improvement</label>
+            </value>
+            <value>
+                <fullName>Bug Fix / Error Recovery</fullName>
+                <default>false</default>
+                <label>Bug Fix / Error Recovery</label>
+            </value>
+            <value>
+                <fullName>Bug</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Bug</label>
+            </value>
+            <value>
+                <fullName>Change Request</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Change Request</label>
+            </value>
+            <value>
+                <fullName>Epic</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Epic</label>
+            </value>
+            <value>
+                <fullName>Feature</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Feature</label>
+            </value>
+            <value>
+                <fullName>Improvement</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Improvement</label>
+            </value>
+            <value>
+                <fullName>Incident</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Incident</label>
+            </value>
+            <value>
+                <fullName>Issue</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Issue</label>
+            </value>
+            <value>
+                <fullName>Research</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Research</label>
+            </value>
+            <value>
+                <fullName>Sub-task</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Sub-task</label>
+            </value>
+            <value>
+                <fullName>Task</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Task</label>
+            </value>
+            <value>
+                <fullName>Test</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Test</label>
+            </value>
+            <value>
+                <fullName>UserStory</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>UserStory</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

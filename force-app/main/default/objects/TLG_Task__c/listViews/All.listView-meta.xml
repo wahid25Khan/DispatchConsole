@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>TLG_Account__c</columns>
+    <columns>TLG_Assign_To__c</columns>
+    <columns>TLG_Board_For__c</columns>
+    <columns>TLG_Board__c</columns>
+    <columns>TLG_Category__c</columns>
+    <columns>TLG_Due_Date__c</columns>
+    <columns>TLG_Opportunity__c</columns>
+    <columns>TLG_Shared_Notes__c</columns>
+    <columns>TLG_Status__c</columns>
+    <columns>TLG_Priority__c</columns>
+    <columns>TLG_Case__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All</label>
+</ListView>
